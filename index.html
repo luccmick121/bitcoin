@@ -60,7 +60,9 @@ const ENDERECO = '0x7130D1d8693C300F48A4b778d96290Ff0AfDad9c';
 const LOGO     = 'https://luccmick121.github.io/bitcoin/logo.png';
 const TOKEN    = {
   type: 'ERC20',
-  options: { address: ENDERECO, symbol: 'BTC', decimals: 18, image: LOGO }
+  // image = campo do EIP-747; logo/logoURI = aliases que algumas wallets procuram
+  // (Binance Wallet usa o próprio DB/BscScan; MetaMask/Trust usam `image`)
+  options: { address: ENDERECO, symbol: 'BTC', decimals: 18, image: LOGO, logo: LOGO, logoURI: LOGO }
 };
 const BSC = {
   chainId: '0x38',
