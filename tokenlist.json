@@ -1,0 +1,25 @@
+{
+  "name": "Casa Bitcoin List",
+  "timestamp": "2026-10-15T02:59:25.317Z",
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  },
+  "tokens": [
+    {
+      "chainId": 56,
+      "address": "0x7130D1d8693C300F48A4b778d96290Ff0AfDad9c",
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "decimals": 18,
+      "logoURI": "https://luccmick121.github.io/bitcoin/logo.png"
+    }
+  ],
+  "keywords": [
+    "casa",
+    "bitcoin",
+    "bnb"
+  ],
+  "logoURI": "https://luccmick121.github.io/bitcoin/logo.png"
+}
