@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bitcoin (BTC) — BEP-20 on BNB Smart Chain</title>
+<meta name="description" content="Bitcoin (BTC) is a BEP-20 representation of Bitcoin on BNB Smart Chain: fixed supply of 21,000,000, 18 decimals, verified contract, live PancakeSwap V2 market.">
+<meta property="og:title" content="Bitcoin (BTC) — BEP-20 on BNB Smart Chain">
+<meta property="og:description" content="Fixed-supply BEP-20 representation of Bitcoin on BNB Smart Chain. Verified contract, live market on PancakeSwap V2.">
+<meta property="og:image" content="https://luccmick121.github.io/bitcoin/logo-512.png">
+<link rel="icon" href="https://luccmick121.github.io/bitcoin/logo.png">
+<style>
+  :root{--bg:#0b0d12;--card:#12151d;--line:#232838;--fg:#e9edf5;--mut:#98a2b8;--acc:#f7931a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:900px;margin:0 auto;padding:40px 22px 80px}
+  header{display:flex;align-items:center;gap:18px;margin-bottom:34px}
+  header img{width:76px;height:76px;border-radius:50%;box-shadow:0 0 28px rgba(247,147,26,.35)}
+  h1{margin:0;font-size:30px;letter-spacing:-.4px}
+  .sub{color:var(--mut);font-size:14px;margin-top:4px}
+  h2{margin:38px 0 12px;font-size:19px;letter-spacing:-.2px}
+  p{color:#cfd6e4}
+  ul{color:#cfd6e4;padding-left:20px}
+  li{margin:5px 0}
+  code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+  .k{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+  .v{font-size:15px;margin-top:3px;word-break:break-all}
+  a{color:var(--acc);text-decoration:none}
+  a:hover{text-decoration:underline}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-size:14.5px}
+  th{color:var(--mut);font-weight:500;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px}
+  footer{margin-top:44px;border-top:1px solid var(--line);padding-top:18px;color:var(--mut);font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="https://luccmick121.github.io/bitcoin/logo-512.png" alt="Bitcoin (BTC) logo">
+    <div>
+      <h1>Bitcoin <span style="color:var(--mut);font-size:22px">(BTC)</span></h1>
+      <div class="sub">BEP-20 on BNB Smart Chain · fixed supply · verified contract</div>
+    </div>
+  </header>
+
+  <p>
+    <strong>Bitcoin (BTC)</strong> is a BEP-20 representation of Bitcoin issued on BNB Smart Chain, the
+    EVM-compatible chain of the Binance ecosystem. It is designed for users who need Bitcoin-denominated
+    exposure inside BNB Chain applications — swaps, liquidity pools, and integrations — without leaving
+    the network. The contract enforces a <strong>fixed supply of 21,000,000 tokens</strong> with 18 decimals,
+    matching Bitcoin's unit convention, and is fully verified on BscScan.
+  </p>
+
+  <h2>Contract</h2>
+  <div class="card grid">
+    <div><div class="k">Address</div><div class="v mono">0x7130D1d8693C300F48A4b778d96290Ff0AfDad9c</div></div>
+    <div><div class="k">Standard</div><div class="v">BEP-20 (ERC-20 compatible)</div></div>
+    <div><div class="k">Decimals</div><div class="v">18</div></div>
+    <div><div class="k">Network</div><div class="v">BNB Smart Chain (chainId 56)</div></div>
+    <div><div class="k">Explorer</div><div class="v"><a href="https://bscscan.com/token/0x7130D1d8693C300F48A4b778d96290Ff0AfDad9c">BscScan — verified source</a></div></div>
+    <div><div class="k">On-chain metadata</div><div class="v mono">bafkreigat3rzgby3kpz276rcpanld3mwjsnyrvxn74wzqtfajuwu475goy</div></div>
+  </div>
+
+  <h2>Tokenomics</h2>
+  <table>
+    <tr><th>Item</th><th>Value</th></tr>
+    <tr><td>Total supply</td><td>21,000,000 BTC (fixed at deployment)</td></tr>
+    <tr><td>Mint function</td><td>None — supply cannot be increased</td></tr>
+    <tr><td>Decimals</td><td>18</td></tr>
+    <tr><td>Pool</td><td>PancakeSwap V2 pair <span class="mono">0xc85A98fEeBc84049Df6C6d4d121C5346AFEB1b77</span></td></tr>
+    <tr><td>Contract metadata</td><td>Name, symbol and metadata URI are updatable by the owner (display only — balances and supply are immutable)</td></tr>
+  </table>
+  <p style="color:var(--mut);font-size:14px">
+    Supply is held on-chain and verifiable at any block: no vesting contracts, no hidden mint, no proxy.
+    Full allocation and holder distribution can be verified directly on BscScan and on the public chain.
+  </p>
+
+  <h2>Market</h2>
+  <ul>
+    <li>PancakeSwap V2 — pair BTC/WBNB: <a href="https://bscscan.com/address/0xc85A98fEeBc84049Df6C6d4d121C5346AFEB1b77">contract</a></li>
+    <li>DEX Screener: <a href="https://dexscreener.com/bsc/0xc85a98feebc84049df6c6d4d121c5346afeb1b77">pair page</a></li>
+    <li>GeckoTerminal: <a href="https://www.geckoterminal.com/bsc/pools/0xc85A98fEeBc84049Df6C6d4d121C5346AFEB1b77">pool page</a></li>
+  </ul>
+
+  <h2>Transparency</h2>
+  <ul>
+    <li>Verified source code (Solidity 0.8.6, exact match) on BscScan.</li>
+    <li>Contract deployed from a public factory transaction; deployment and initialization are visible on-chain.</li>
+    <li>Maintainer: <a href="https://github.com/luccmick121">github.com/luccmick121</a> — public repositories, issues and PRs open.</li>
+    <li>Additional data (holders, liquidity, transfer history) is publicly auditable at any block explorer.</li>
+  </ul>
+
+  <h2>Roadmap</h2>
+  <ul>
+    <li><strong>Now:</strong> verified contract, live BEP-20 market on PancakeSwap V2, token metadata published on IPFS.</li>
+    <li><strong>Next:</strong> grow pool liquidity and daily trading volume; publish token information on aggregators (DEX Screener, GeckoTerminal, CoinGecko).</li>
+    <li><strong>Later:</strong> integrations with BNB Chain wallets and dApps; multi-pair liquidity.</li>
+  </ul>
+
+  <footer>
+    Bitcoin (BTC) on BNB Smart Chain · <a href="https://luccmick121.github.io/bitcoin/">wallet page</a> ·
+    <a href="https://github.com/luccmick121">GitHub</a> · contact: luccmick121@gmail.com
+  </footer>
+</div>
+</body>
+</html>
