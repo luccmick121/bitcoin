@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bitcoin — Adicionar à carteira</title>
+<link rel="icon" href="logo.png">
+<meta property="og:title" content="Bitcoin (BTC) — Adicionar à carteira">
+<meta property="og:description" content="BTC · BEP-20 · BNB Chain">
+<meta property="og:image" content="logo.png">
+<style>
+  :root{--orange:#F7931A;--dark:#14100A;--soft:#C9A97A}
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+  html,body{min-height:100%;background:var(--dark);color:#fff}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;overflow-x:hidden}
+  img.logo{width:88px;height:88px;border-radius:50%;margin-bottom:14px;box-shadow:0 0 24px rgba(247,147,26,.35)}
+  h1{font-size:21px;margin-bottom:2px}
+  p.sub{color:var(--soft);font-size:13px;margin-bottom:24px}
+  button{width:100%;max-width:340px;padding:18px;border:none;border-radius:16px;background:var(--orange);color:#14100A;font-size:17px;font-weight:800;cursor:pointer;margin-bottom:10px}
+  button:active{transform:scale(.97)}
+  #btn{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(247,147,26,.45)}50%{box-shadow:0 0 0 16px rgba(247,147,26,0)}}
+  #btn.parado{animation:none;opacity:.55;cursor:not-allowed}
+  #btnCopiar{background:transparent;border:1.5px solid rgba(201,169,122,.35);color:var(--soft);font-size:14px;font-weight:600;padding:14px;display:none}
+  #st{font-size:13px;margin-top:16px;min-height:18px;color:var(--orange);padding:0 10px;line-height:1.5}
+  #st.err{color:#EF0027}
+  #st.info{color:var(--soft)}
+  code{font-size:11px;color:var(--soft);word-break:break-all;margin-top:10px;display:block;line-height:1.5}
+  .tiny{font-size:11px;color:#7a6a54;margin-top:14px;max-width:340px;line-height:1.5}
+</style>
+</head>
+<body>
+  <img class="logo" src="logo.png" alt="Bitcoin">
+  <h1>Bitcoin</h1>
+  <p class="sub">BTC · BEP-20 · BNB Chain</p>
+  <button id="btn">➕ Adicionar BTC à carteira</button>
+  <button id="btnCopiar">📋 Copiar endereço do contrato</button>
+  <div id="st"></div>
+  <code id="enderecoTxt"></code>
+  <div class="tiny" id="dica">A identidade real do ativo é o ENDEREÇO do contrato.</div>
+  <div class="tiny" style="margin-top:10px">
+    Bitcoin (BTC) · BEP-20 na BNB Chain · Contrato: <span id="contratoRodape"></span><br>
+    Contato oficial: <a href="mailto:luccmick121@gmail.com" style="color:inherit">luccmick121@gmail.com</a>
+  </div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   TOKEN — dados do ativo
+   ENDERECO: PREENCHER PÓS-DEPLOY (R8 — só endereço do registro verificado
+   addresses.bsc.json). Enquanto estiver "PREENCHER", a página fica armada.
+   LOGO: CID pinado no Pinata da casa E no Pinata da Flap (funcs.flap.sh
+   /api/v1/ipfs/pins) — servido em flap.mypinata.cloud (mesmo gateway dos
+   tokens Flap). O watchAsset guarda ESSA URL como imagem do token.
+   ═══════════════════════════════════════════════════════════════════════ */
+const ENDERECO = '0x7130D1d8693C300F48A4b778d96290Ff0AfDad9c';
+const LOGO     = 'https://flap.mypinata.cloud/ipfs/bafkreiceuhpcalcc6nkqoydu2vvkp5lnnlenc4iiqea3r5dlgydcmfnqcy';
+const TOKEN    = {
+  type: 'ERC20',
+  options: { address: ENDERECO, symbol: 'BTC', decimals: 18, image: LOGO }
+};
+const BSC = {
+  chainId: '0x38',
+  chainName: 'BNB Smart Chain',
+  nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+  rpcUrls: ['https://bsc-dataseed.binance.org'],
+  blockExplorerUrls: ['https://bscscan.com']
+};
+
+const elSt   = document.getElementById('st');
+const elDica = document.getElementById('dica');
+const st = (m, cls='') => { elSt.textContent = m; elSt.className = cls; };
+const pendente = () => /^PREENCHER/i.test(ENDERECO);
+document.getElementById('enderecoTxt').textContent = pendente() ? '(contrato aguardando deploy — R30)' : ENDERECO;
+elDica.textContent = 'A identidade real do ativo é o ENDEREÇO do contrato: ' + ENDERECO + ' — confira no BscScan antes de interagir.';
+document.getElementById('contratoRodape').textContent = ENDERECO;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DETECÇÃO DE DISPOSITIVO (mesma engenharia da página USDT/ETH da casa)
+   ═══════════════════════════════════════════════════════════════════════ */
+const isMobile = /android|iphone|ipad|ipod|opera mini|iemobile|mobile/i.test(navigator.userAgent);
+const deepLinkMetaMask = () => 'https://metamask.app.link/dapp/' + location.href.replace(/^https?:\/\//, '');
+
+const nomeDe = (p) => {
+  if (!p) return '';
+  if (p.isMetaMask)  return 'MetaMask';
+  if (p.isTrust || p.isTrustWallet) return 'Trust Wallet';
+  if (p.isCoinbaseWallet) return 'Coinbase Wallet';
+  if (p.isRabby)     return 'Rabby';
+  if (p.isOkxWallet) return 'OKX Wallet';
+  if (p.isBraveWallet) return 'Brave Wallet';
+  return 'Carteira EVM';
+};
+
+/* EIP-6963 PRIMEIRO — o padrão oficial de anúncio de carteiras. */
+function anunciar6963(msEspera = 700) {
+  return new Promise((resolve) => {
+    const achados = [];
+    const onAnuncio = (ev) => { if (ev?.detail?.provider) achados.push(ev.detail); };
+    window.addEventListener('eip6963:announceProvider', onAnuncio);
+    window.dispatchEvent(new Event('eip6963:requestProvider'));
+    setTimeout(() => {
+      window.removeEventListener('eip6963:announceProvider', onAnuncio);
+      window.__carteirasVistas = achados.map(a => a.info?.name || '?');
+      resolve(achados);
+    }, msEspera);
+  });
+}
+function escolherDosAnuncios(achados) {
+  if (!achados.length) return null;
+  const porRdns = achados.find(a => /metamask/i.test(a.info?.rdns || ''));
+  const porNome = achados.find(a => /^metamask$/i.test((a.info?.name || '').trim()))
+               || achados.find(a => /metamask/i.test(a.info?.name || ''));
+  const esc = porRdns || porNome || achados[0]; // aceita qualquer EVM que saiba watchAsset
+  return { provider: esc.provider, nome: esc.info?.name || nomeDe(esc.provider), fonte: 'EIP-6963' };
+}
+async function acharProvider() {
+  const achados = await anunciar6963();
+  const via6963 = escolherDosAnuncios(achados);
+  if (via6963) return via6963;
+  if (window.ethereum && typeof window.ethereum.request === 'function') {
+    if (Array.isArray(window.ethereum.providers) && window.ethereum.providers.length) {
+      const lista = window.ethereum.providers.filter(p => p && typeof p.request === 'function');
+      if (lista.length) return { provider: lista[0], nome: nomeDe(lista[0]), fonte: 'providers[]' };
+    }
+    return { provider: window.ethereum, nome: nomeDe(window.ethereum), fonte: 'window.ethereum' };
+  }
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   AÇÃO
+   ═══════════════════════════════════════════════════════════════════════ */
+document.getElementById('btnCopiar').addEventListener('click', async () => {
+  if (pendente()) { st('Contrato ainda não deployado — endereço indisponível.', 'err'); return; }
+  try {
+    await navigator.clipboard.writeText(ENDERECO);
+    st('✓ Endereço copiado. Cole em "Importar token" na sua carteira.', 'info');
+  } catch (_) {
+    st('Copie manualmente: ' + ENDERECO, 'info');
+  }
+});
+
+document.getElementById('btn').addEventListener('click', async () => {
+  const btn = document.getElementById('btn');
+  if (pendente()) {
+    st('O contrato ainda não foi deployado (R30 — ordem explícita do operador). Esta página está armada: preencha o endereço em site/bitcoin/index.html pós-deploy.', 'err');
+    return;
+  }
+  btn.classList.add('parado');
+  st('Procurando carteira…', 'info');
+
+  const achado = await acharProvider();
+
+  if (!achado) {
+    document.getElementById('btnCopiar').style.display = 'block';
+    if (isMobile) {
+      st('No celular, a carteira não se conecta sozinha — abra pelo app. Toque abaixo:', 'info');
+      btn.textContent = '🦊 Abrir na MetaMask (app)';
+      btn.onclick = () => { location.href = deepLinkMetaMask(); };
+      btn.classList.remove('parado');
+      elDica.textContent = 'Ou toque em "Copiar endereço" e cole em Importar token dentro da sua carteira.';
+    } else {
+      const vistas = (window.__carteirasVistas || []).join(', ') || 'nenhuma';
+      st('Nenhuma carteira EVM encontrada neste navegador. Carteiras vistas: ' + vistas +
+         ' — se você usa MetaMask, confirme que a extensão está instalada e desbloqueada.', 'err');
+      btn.textContent = '🔄 Tentar novamente';
+      btn.onclick = () => location.reload();
+    }
+    return;
+  }
+
+  try {
+    const ok = await achado.provider.request({ method: 'wallet_watchAsset', params: TOKEN });
+    if (ok) {
+      st('✓ BTC adicionado com a logo em ' + achado.nome + '!', '');
+      btn.textContent = '✓ Adicionado';
+    } else {
+      st('Você recusou. Toque de novo para tentar.', 'err');
+      btn.textContent = '➕ Adicionar BTC à carteira';
+      btn.classList.remove('parado');
+    }
+  } catch (e) {
+    const msg = String(e?.message || e);
+    // Rede errada → troca pra BNB Chain (e adiciona se não existir) e tenta UMA vez
+    if (/chain|network|4902/i.test(msg)) {
+      try {
+        await achado.provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BSC.chainId }] });
+      } catch (err) {
+        if (err?.code === 4902 || /unrecognized|not added|unknown/i.test(String(err?.message || ''))) {
+          try { await achado.provider.request({ method: 'wallet_addEthereumChain', params: [BSC] }); } catch (_) {}
+        }
+      }
+      try {
+        const ok = await achado.provider.request({ method: 'wallet_watchAsset', params: TOKEN });
+        st(ok ? '✓ BTC adicionado com a logo!' : 'Recusado pelo usuário', ok ? '' : 'err');
+        return;
+      } catch (_) { /* cai no erro abaixo */ }
+    }
+    document.getElementById('btnCopiar').style.display = 'block';
+    st('Não foi possível adicionar automaticamente (' + achado.nome + '). ' +
+       'Use "Copiar endereço" e importe o token manualmente.', 'err');
+    btn.textContent = '🔄 Tentar novamente';
+    btn.onclick = () => location.reload();
+  }
+});
+
+window.addEventListener('eip6963:announceProvider', () => {}, { once: true });
+</script>
+</body>
+</html>
