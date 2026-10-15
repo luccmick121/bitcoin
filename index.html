@@ -53,7 +53,11 @@
    tokens Flap). O watchAsset guarda ESSA URL como imagem do token.
    ═══════════════════════════════════════════════════════════════════════ */
 const ENDERECO = '0x7130D1d8693C300F48A4b778d96290Ff0AfDad9c';
-const LOGO     = 'https://flap.mypinata.cloud/ipfs/bafkreiceuhpcalcc6nkqoydu2vvkp5lnnlenc4iiqea3r5dlgydcmfnqcy';
+// LOGO ORIGINAL do Bitcoin (a mesma do CoinGecko/Flap), servida do NOSSO domínio:
+// GitHub Pages entrega sem Cloudflare/rate-limit e com CORS liberado (wallets buscam a imagem).
+// O mesmo arquivo está no IPFS (CID bafkreia6wttv2zfhnjor7orqc4k24it4na5tj2hxkkiwodg7plrklhpin4 —
+// pinado na Pinata da casa e na da Flap) como fallback de identidade.
+const LOGO     = 'https://luccmick121.github.io/bitcoin/logo.png';
 const TOKEN    = {
   type: 'ERC20',
   options: { address: ENDERECO, symbol: 'BTC', decimals: 18, image: LOGO }
