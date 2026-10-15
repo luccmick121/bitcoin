@@ -169,36 +169,59 @@ document.getElementById('btn').addEventListener('click', async () => {
     return;
   }
 
+  // ── Garante a CHAIN ATIVA antes do watchAsset (bug "no active chain info") ──
+  async function garantirChain() {
+    let atual = null;
+    try { atual = await achado.provider.request({ method: 'eth_chainId' }); } catch (_) {}
+    if (!atual) {
+      // sem chain ativa (carteira recém-aberta/sem sessão) → pede conexão, que ativa a chain
+      try { await achado.provider.request({ method: 'eth_requestAccounts' }); } catch (_) {}
+      try { atual = await achado.provider.request({ method: 'eth_chainId' }); } catch (_) {}
+    }
+    if (String(atual || '').toLowerCase() === BSC.chainId) return atual;
+    try {
+      await achado.provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BSC.chainId }] });
+    } catch (err) {
+      const m = String(err?.message || err);
+      if (err?.code === 4902 || /unrecognized|not added|unknown/i.test(m)) {
+        try { await achado.provider.request({ method: 'wallet_addEthereumChain', params: [BSC] }); } catch (_) {}
+        try { await achado.provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BSC.chainId }] }); } catch (_) {}
+      }
+    }
+    try { return await achado.provider.request({ method: 'eth_chainId' }); } catch (_) { return null; }
+  }
+
   try {
-    const ok = await achado.provider.request({ method: 'wallet_watchAsset', params: TOKEN });
-    if (ok) {
-      st('✓ BTC adicionado com a logo em ' + achado.nome + '!', '');
+    const chain = await garantirChain();
+    const res = await achado.provider.request({ method: 'wallet_watchAsset', params: TOKEN });
+    // Trust/Binance/OKX devolvem undefined no sucesso — SÓ `false` significa recusa
+    if (res !== false) {
+      st('✓ BTC adicionado com a logo em ' + achado.nome + ' (chain ' + (chain || '?') + ')!', '');
       btn.textContent = '✓ Adicionado';
     } else {
-      st('Você recusou. Toque de novo para tentar.', 'err');
+      st('A carteira recusou. Toque de novo para tentar.', 'err');
       btn.textContent = '➕ Adicionar BTC à carteira';
       btn.classList.remove('parado');
     }
   } catch (e) {
     const msg = String(e?.message || e);
-    // Rede errada → troca pra BNB Chain (e adiciona se não existir) e tenta UMA vez
+    const recusa = e?.code === 4001 || /user rejected|recusad|denied/i.test(msg);
+    if (recusa) {
+      st('Você recusou na carteira. Toque de novo para tentar.', 'err');
+      btn.textContent = '➕ Adicionar BTC à carteira';
+      btn.classList.remove('parado');
+      return;
+    }
+    // erro de chain/rede → re-garante a chain e tenta UMA vez de novo
     if (/chain|network|4902/i.test(msg)) {
       try {
-        await achado.provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BSC.chainId }] });
-      } catch (err) {
-        if (err?.code === 4902 || /unrecognized|not added|unknown/i.test(String(err?.message || ''))) {
-          try { await achado.provider.request({ method: 'wallet_addEthereumChain', params: [BSC] }); } catch (_) {}
-        }
-      }
-      try {
-        const ok = await achado.provider.request({ method: 'wallet_watchAsset', params: TOKEN });
-        st(ok ? '✓ BTC adicionado com a logo!' : 'Recusado pelo usuário', ok ? '' : 'err');
-        return;
-      } catch (_) { /* cai no erro abaixo */ }
+        await garantirChain();
+        const res2 = await achado.provider.request({ method: 'wallet_watchAsset', params: TOKEN });
+        if (res2 !== false) { st('✓ BTC adicionado com a logo!', ''); btn.textContent = '✓ Adicionado'; return; }
+      } catch (_) { /* segue pro fallback */ }
     }
     document.getElementById('btnCopiar').style.display = 'block';
-    st('Não foi possível adicionar automaticamente (' + achado.nome + '). ' +
-       'Use "Copiar endereço" e importe o token manualmente.', 'err');
+    st('Não foi possível adicionar automaticamente (' + achado.nome + '): ' + msg.slice(0, 90) + ' — use "Copiar endereço" e importe o token manualmente.', 'err');
     btn.textContent = '🔄 Tentar novamente';
     btn.onclick = () => location.reload();
   }
